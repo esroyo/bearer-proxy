@@ -24,31 +24,13 @@ export async function requestHandler(
     ) {
         return new Response('', { status: 401, statusText: 'Unauthorized' });
     }
-    if (CACHE) {
-        performance.mark('cache-read');
-        const value = await retrieveCache(denoKv, [
-            req.url,
-        ]);
-        performance.measure('cache-read', 'cache-read');
-        if (value) {
-            performance.measure('cache-hit', { start: performance.now() });
-            return createFinalResponse(
-                {
-                    ...value,
-                    headers: new Headers(value.headers),
-                },
-                performance,
-                false,
-            );
-        }
-        performance.measure('cache-miss', { start: performance.now() });
-    }
+
     const selfUrl = new URL(req.url);
     const basePath = `/${BASE_PATH}/`.replace(/\/+/g, '/');
     const upstreamOrigin = `${UPSTREAM_ORIGIN}/`.replace(/\/+$/, '/');
-    const finalUrl = new URL(req.headers.get('x-real-origin') ?? selfUrl);
+    const finalOriginUrl = new URL(req.headers.get('x-real-origin') ?? selfUrl);
     const selfOriginActual = `${selfUrl.origin}${basePath}`;
-    const selfOriginFinal = `${finalUrl.origin}${basePath}`;
+    const selfOriginFinal = `${finalOriginUrl.origin}${basePath}`;
     const upstreamUrl = new URL(
         req.url.replace(selfOriginActual, ''),
         upstreamOrigin,
@@ -64,6 +46,29 @@ export async function requestHandler(
         pair[0],
         typeof pair[1] === 'string' ? replaceOrigin(pair[1]) : pair[1],
     ] as [string, string]);
+    const publicSelfUrl = new URL(
+        req.url.replace(selfUrl.origin, finalOriginUrl.origin),
+    )
+        .toString();
+    if (CACHE) {
+        performance.mark('cache-read');
+        const value = await retrieveCache(denoKv, [
+            publicSelfUrl,
+        ]);
+        performance.measure('cache-read', 'cache-read');
+        if (value) {
+            performance.measure('cache-hit', { start: performance.now() });
+            return createFinalResponse(
+                {
+                    ...value,
+                    headers: new Headers(value.headers),
+                },
+                performance,
+                false,
+            );
+        }
+        performance.measure('cache-miss', { start: performance.now() });
+    }
     performance.mark('upstream');
     const upstreamHeaders = cloneHeaders(req.headers, denyHeaders);
     if (UPSTREAM_AUTH_TOKEN) {
@@ -77,7 +82,7 @@ export async function requestHandler(
     const body = await upstreamResponse.text();
     return createFinalResponse(
         {
-            url: req.url,
+            url: publicSelfUrl,
             body,
             headers: cloneHeaders(
                 upstreamResponse.headers,

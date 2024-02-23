@@ -56,6 +56,7 @@ export const cloneHeaders = (
 const denyHeadersList = [
     'access-control-expose-headers',
     'age',
+    'date',
     'alt-svc',
     'cf-cache-status',
     'cf-ray',
@@ -64,8 +65,13 @@ const denyHeadersList = [
     'nel',
     'report-to',
     'server',
+    'via',
+    'x-amz-cf-id',
+    'x-amz-cf-pop',
+    'x-cache',
     'x-content-source',
     'x-debug',
+    'x-forwarded-for',
     'x-real-origin',
 ];
 
