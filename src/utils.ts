@@ -25,7 +25,7 @@ export const nodeRequest = async (
                 }
                 try {
                     resolve(
-                        new Response(body, {
+                        new Response(body || '', {
                             headers: response.headers,
                             status: response.statusCode,
                             statusText: response.statusMessage,
