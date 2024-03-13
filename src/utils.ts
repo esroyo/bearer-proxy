@@ -3,6 +3,8 @@ import { kvGet, kvSet, request } from '../deps.ts';
 import type { HttpZResponseModel, ResponseProps } from './types.ts';
 
 const nullBodyStatus = [101, 103, 204, 205, 304];
+const filterBody = (body: string, status: number) =>
+    nullBodyStatus.includes(status) ? null : body;
 
 export const nodeRequest = async (
     url: string,
@@ -27,9 +29,7 @@ export const nodeRequest = async (
                 }
                 resolve(
                     new Response(
-                        nullBodyStatus.includes(response.statusCode)
-                            ? null
-                            : body,
+                        filterBody(body, response.statusCode),
                         {
                             headers: response.headers,
                             status: response.statusCode,
@@ -188,11 +188,14 @@ export const createFinalResponse = async (
     performance.measure('total', 'total');
     headers.set('server-timing', buildDebugPerformance(performance));
 
-    const response = new Response(body, {
-        headers,
-        status,
-        statusText,
-    });
+    const response = new Response(
+        filterBody(body, status),
+        {
+            headers,
+            status,
+            statusText,
+        },
+    );
 
     return response;
 };
