@@ -23,13 +23,18 @@ export const nodeRequest = async (
                 if (error) {
                     return reject(error);
                 }
-                resolve(
-                    new Response(body, {
-                        headers: response.headers,
-                        status: response.statusCode,
-                        statusText: response.statusMessage,
-                    }),
-                );
+                try {
+                    resolve(
+                        new Response(body, {
+                            headers: response.headers,
+                            status: response.statusCode,
+                            statusText: response.statusMessage,
+                        }),
+                    );
+                } catch (error) {
+                    console.error('Error processing response:', response);
+                    resolve(new Response('', { status: 500 }));
+                }
             },
         );
     });
