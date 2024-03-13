@@ -2,6 +2,8 @@ import { kvGet, kvSet, request } from '../deps.ts';
 
 import type { HttpZResponseModel, ResponseProps } from './types.ts';
 
+const nullBodyStatus = [101, 103, 204, 205, 304];
+
 export const nodeRequest = async (
     url: string,
     init: RequestInit,
@@ -23,18 +25,18 @@ export const nodeRequest = async (
                 if (error) {
                     return reject(error);
                 }
-                try {
-                    resolve(
-                        new Response(body || '', {
+                resolve(
+                    new Response(
+                        nullBodyStatus.includes(response.statusCode)
+                            ? null
+                            : body,
+                        {
                             headers: response.headers,
                             status: response.statusCode,
                             statusText: response.statusMessage,
-                        }),
-                    );
-                } catch (error) {
-                    console.error('Error processing response:', response);
-                    resolve(new Response('', { status: 500 }));
-                }
+                        },
+                    ),
+                );
             },
         );
     });
