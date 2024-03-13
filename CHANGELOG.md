@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.6](https://github.com/esroyo/bearer-proxy/compare/v1.0.5...v1.0.6) (2024-03-13)
+
+
+### Bug Fixes
+
+* ensure null body is repected always ([7c7ef22](https://github.com/esroyo/bearer-proxy/commit/7c7ef22feb9c55625ecc9180f151fd686f433eae))
+
 ## [1.0.5](https://github.com/esroyo/bearer-proxy/compare/v1.0.4...v1.0.5) (2024-03-13)
 
 
