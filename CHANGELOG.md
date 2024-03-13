@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.5](https://github.com/esroyo/bearer-proxy/compare/v1.0.4...v1.0.5) (2024-03-13)
+
+
+### Bug Fixes
+
+* ensure null body status for 101, 103, 204, 205, or 304 ([52348de](https://github.com/esroyo/bearer-proxy/commit/52348deac162d3e0df54655c570e60bc52a64711))
+
 ## [1.0.4](https://github.com/esroyo/bearer-proxy/compare/v1.0.3...v1.0.4) (2024-03-13)
 
 
